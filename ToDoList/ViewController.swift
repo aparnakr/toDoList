@@ -18,6 +18,22 @@ class ViewController: UIViewController , UITableViewDelegate , UITableViewDataSo
         // Do any additional setup after loading the view, typically from a nib.
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        
+        let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        let request = NSFetchRequest(entityName: "Item")
+        let results: [AnyObject]?
+        do{
+            try results = context.executeFetchRequest(request)
+        }
+        catch _{
+            results = nil
+        }
+        if results != nil{
+            self.items = results as! [Item]
+        }
+        self.tableView.reloadData()
+    
+
     }
     
     func configTfield(textField:UITextField){
@@ -79,6 +95,19 @@ class ViewController: UIViewController , UITableViewDelegate , UITableViewDataSo
         let cell = UITableViewCell()
         cell.textLabel?.text = self.items[indexPath.row].title
         return cell
+    }
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        //items[indexPath.row].title
+        let context = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        print(self.items[indexPath.row])
+        context.deleteObject(self.items[indexPath.row])
+        do{
+            try context.save()
+        }
+        catch _{
+            
+        }
+        self.tableView.reloadData()
     }
 
 }
